@@ -28,7 +28,7 @@ func (db Database) createSchema() {
 		"DROP DATABASE IF EXISTS " + db.Name,
 		"CREATE DATABASE " + db.Name,
 		"USE " + db.Name,
-		"CREATE TABLE products (id STRING, name STRING, price STRING, quantity STRING, PRIMARY KEY(id))",
+		"CREATE TABLE products (id SERIAL PRIMARY KEY, name STRING, price STRING, quantity STRING)",
 	}
 
 	db.ExecSQL(databaseInit)
@@ -41,6 +41,11 @@ func (db Database) ExecSQL(sql []string) {
 			log.Fatal(err)
 		}
 	}
+}
+
+func (db Database) Query(sql string, values ...any) (pgx.Rows, error) {
+	rows, err := db.Conn.Query(context.Background(), sql, values...)
+	return rows, err
 }
 
 func (db Database) ExecQuery(sql string, values ...any) error {
@@ -62,9 +67,4 @@ func USE(name string, conn *pgx.Conn) *Database {
 	db.ExecQuery("USE " + name)
 
 	return &db
-}
-
-func (db Database) Query(sql string, values ...any) (pgx.Rows, error) {
-	rows, err := db.Conn.Query(context.Background(), sql, values...)
-	return rows, err
 }

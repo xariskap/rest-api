@@ -1,0 +1,183 @@
+[
+    {
+      "id": "1",
+      "name": "Apple iPhone 15",
+      "price": "999.99",
+      "quantity": "150"
+    },
+    {
+      "id": "2",
+      "name": "Samsung Galaxy S23",
+      "price": "849.99",
+      "quantity": "200"
+    },
+    {
+      "id": "3",
+      "name": "Sony PlayStation 5",
+      "price": "499.99",
+      "quantity": "75"
+    },
+    {
+      "id": "4",
+      "name": "Dell XPS 13 Laptop",
+      "price": "1199.99",
+      "quantity": "50"
+    },
+    {
+      "id": "5",
+      "name": "Bose QuietComfort 45 Headphones",
+      "price": "329.99",
+      "quantity": "120"
+    },
+    {
+      "id": "6",
+      "name": "Apple MacBook Pro 14-inch",
+      "price": "1999.99",
+      "quantity": "30"
+    },
+    {
+      "id": "7",
+      "name": "Google Pixel 8",
+      "price": "799.99",
+      "quantity": "180"
+    },
+    {
+      "id": "8",
+      "name": "Nike Air Max 270",
+      "price": "149.99",
+      "quantity": "250"
+    },
+    {
+      "id": "9",
+      "name": "Dyson V15 Vacuum Cleaner",
+      "price": "749.99",
+      "quantity": "60"
+    },
+    {
+      "id": "10",
+      "name": "Sony Bravia 65-inch 4K TV",
+      "price": "1299.99",
+      "quantity": "40"
+    },
+    {
+      "id": "11",
+      "name": "KitchenAid Stand Mixer",
+      "price": "499.99",
+      "quantity": "90"
+    },
+    {
+      "id": "12",
+      "name": "Fitbit Charge 5",
+      "price": "179.99",
+      "quantity": "210"
+    },
+    {
+      "id": "13",
+      "name": "Canon EOS R6 Mirrorless Camera",
+      "price": "2499.99",
+      "quantity": "25"
+    },
+    {
+      "id": "14",
+      "name": "LG C2 OLED 55-inch TV",
+      "price": "1399.99",
+      "quantity": "35"
+    },
+    {
+      "id": "15",
+      "name": "Adidas Ultraboost 22",
+      "price": "179.99",
+      "quantity": "300"
+    },
+    {
+      "id": "16",
+      "name": "Apple AirPods Pro (2nd Gen)",
+      "price": "249.99",
+      "quantity": "400"
+    },
+    {
+      "id": "17",
+      "name": "Microsoft Surface Pro 9",
+      "price": "1099.99",
+      "quantity": "55"
+    },
+    {
+      "id": "18",
+      "name": "Instant Pot Duo 7-in-1",
+      "price": "99.99",
+      "quantity": "150"
+    },
+    {
+      "id": "19",
+      "name": "Amazon Echo Show 10",
+      "price": "249.99",
+      "quantity": "130"
+    },
+    {
+      "id": "20",
+      "name": "Samsung Galaxy Watch 6",
+      "price": "349.99",
+      "quantity": "160"
+    },
+    {
+      "id": "21",
+      "name": "GoPro Hero 11 Black",
+      "price": "499.99",
+      "quantity": "70"
+    },
+    {
+      "id": "22",
+      "name": "Nintendo Switch OLED Model",
+      "price": "349.99",
+      "quantity": "85"
+    },
+    {
+      "id": "23",
+      "name": "Herman Miller Aeron Chair",
+      "price": "1449.99",
+      "quantity": "20"
+    },
+    {
+      "id": "24",
+      "name": "Logitech MX Master 3 Mouse",
+      "price": "99.99",
+      "quantity": "250"
+    },
+    {
+      "id": "25",
+      "name": "JBL Flip 6 Bluetooth Speaker",
+      "price": "129.99",
+      "quantity": "160"
+    },
+    {
+      "id": "26",
+      "name": "HP Envy 34 All-in-One Desktop",
+      "price": "1899.99",
+      "quantity": "45"
+    },
+    {
+      "id": "27",
+      "name": "ASUS ROG Strix Gaming Laptop",
+      "price": "2299.99",
+      "quantity": "50"
+    },
+    {
+      "id": "28",
+      "name": "Theragun Pro",
+      "price": "599.99",
+      "quantity": "100"
+    },
+    {
+      "id": "29",
+      "name": "YETI Tundra 45 Cooler",
+      "price": "325.00",
+      "quantity": "80"
+    },
+    {
+      "id": "30",
+      "name": "Peloton Bike+",
+      "price": "2495.00",
+      "quantity": "35"
+    }
+  ]
+  
