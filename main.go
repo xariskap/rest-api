@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"rest/db"
 
@@ -20,11 +21,37 @@ type Product struct {
 	Quantity string `json:"quantity"`
 }
 
-// Get all products
-func getAllProducts(db *db.Database) gin.HandlerFunc {
-
+func getProducts(db *db.Database) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		rows, err := db.Query("SELECT id, name, price, quantity FROM products")
+		pageStr := c.Query("page")
+		limitStr := c.Query("limit")
+
+		page, err := strconv.Atoi(pageStr)
+		if err != nil || page < 1 {
+			page = 1
+		}
+
+		limit, err := strconv.Atoi(limitStr)
+		if err != nil || limit < 1 {
+			limit = 10
+		}
+
+		offset := (page - 1) * limit
+
+		var totalProducts int
+		err = db.QueryRow("SELECT COUNT(*) FROM products").Scan(&totalProducts)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Check if the offset is out of range
+		if offset >= totalProducts {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Page out of range"})
+			return
+		}
+
+		rows, err := db.Query("SELECT id, name, price, quantity FROM products LIMIT $1 OFFSET $2", limit, offset)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -43,6 +70,23 @@ func getAllProducts(db *db.Database) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, products)
+
+	}
+}
+
+// Get a specific product
+func getProduct(db *db.Database) gin.HandlerFunc{
+	return func(c *gin.Context) {
+		id := c.Query("id")
+		var p Product
+
+		err := db.QueryRow("SELECT * FROM products WHERE id = $1", id).Scan(&p.ID, &p.Name, &p.Price, &p.Quantity)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, p)
 	}
 }
 
@@ -65,14 +109,83 @@ func addProduct(db *db.Database) gin.HandlerFunc {
 	}
 }
 
+func updatePruduct(db *db.Database) gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		var dbProduct Product
+		var newProduct Product
+		id := c.Query("id")
+		if id == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Product ID is not provided!"})
+			return
+		}
+
+		
+
+		if err := c.ShouldBindJSON(&newProduct); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		err := db.QueryRow("SELECT * FROM products WHERE id = $1", id).Scan(&dbProduct.ID, &dbProduct.Name, &dbProduct.Price, &dbProduct.Quantity)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		if newProduct.Name == "" {
+			newProduct.Name = dbProduct.Name
+		}
+
+		if newProduct.Price == "" {
+			newProduct.Price = dbProduct.Price
+		}
+
+		if newProduct.Quantity == "" {
+			newProduct.Quantity = dbProduct.Quantity
+		}
+
+		err = db.ExecQuery("UPDATE products SET name = $1, price = $2, quantity = $3 WHERE id = $4", newProduct.Name, newProduct.Price, newProduct.Quantity, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, newProduct)
+	}
+}
+
+func deleteProduct(db *db.Database) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Query("id")
+
+		if id == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Product ID is not provided!"})
+			return
+		}
+
+		err := db.ExecQuery("DELETE FROM products WHERE id = $1", id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusNoContent, nil)
+	}
+	
+}
+
 func main() {
 	database := db.USE(dbName, dbConn)
 	defer dbConn.Close(context.Background())
 
 	r := gin.Default()
 
-	r.GET("/products", getAllProducts(database))
+	r.GET("/products", getProducts(database))
+	r.GET("/product", getProduct(database))
 	r.POST("/products", addProduct(database))
+	r.PUT("/product", updatePruduct(database))
+	r.DELETE("/product", deleteProduct(database))
 
 	fmt.Println("Server is running on http://localhost:8888")
 	if err := r.Run(":8888"); err != nil {

@@ -14,6 +14,10 @@ type Product struct {
 	Quantity string `json:"quantity"`
 }
 
+func NewProduct(id, name, price, quantity string) Product{
+	return Product{id, name, price, quantity}
+}
+
 func JsonToArray(path string) []Product {
 	file, err := os.Open(path)
 	if err != nil {

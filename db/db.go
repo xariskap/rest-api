@@ -53,8 +53,14 @@ func (db Database) ExecQuery(sql string, values ...any) error {
 	return err
 }
 
+func (db Database) QueryRow(sql string, values ...any) pgx.Row {
+	row := db.Conn.QueryRow(context.Background(), sql, values...)
+	return row
+}
+
+// Change connectionString to "postgresql://root:root@localhost:5432/" to run with a PostgreSQL database (SHOULD WORK BUT NOT TESTED)
 func GetConnection() *pgx.Conn {
-	connectionString := "postgresql://root:root@localhost:26257/defaultdb"
+	connectionString := "postgresql://root:root@localhost:26257"
 	conn, err := pgx.Connect(context.Background(), connectionString)
 	if err != nil {
 		log.Fatal(err)
