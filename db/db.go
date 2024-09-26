@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/jackc/pgx/v5"
@@ -12,12 +13,12 @@ type Database struct {
 	Conn *pgx.Conn
 }
 
-func NewDatabase(name string, conn *pgx.Conn) Database {
+func NewDatabase(user, password, host, port, name string, conn *pgx.Conn) Database {
 	return Database{name, conn}
 }
 
-func Create(name string, conn *pgx.Conn) *Database {
-	db := NewDatabase(name, conn)
+func Create(user, password, host, port, name string, conn *pgx.Conn) *Database {
+	db := NewDatabase(user, password, host, port, name, conn)
 	db.createSchema()
 
 	return &db
@@ -58,18 +59,15 @@ func (db Database) QueryRow(sql string, values ...any) pgx.Row {
 	return row
 }
 
-// Change connectionString to "postgresql://root:root@localhost:5432/" to run with a PostgreSQL database (SHOULD WORK BUT NOT TESTED)
-func GetConnection() *pgx.Conn {
-	connectionString := "postgresql://root:root@localhost:26257"
+func GetConnection(user, host, port, name string) (*pgx.Conn, error) {
+	connectionString := fmt.Sprintf("postgresql://%s:@%s:%s/%s", user, host, port, name)
 	conn, err := pgx.Connect(context.Background(), connectionString)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return conn
+
+	return conn, err
 }
 
-func USE(name string, conn *pgx.Conn) *Database {
-	db := NewDatabase(name, conn)
+func USE(user, password, host, port, name string, conn *pgx.Conn) *Database {
+	db := NewDatabase(user, password, host, port, name, conn)
 	db.ExecQuery("USE " + name)
 
 	return &db

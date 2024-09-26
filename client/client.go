@@ -8,13 +8,10 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"rest/db"
 	"rest/utils"
 )
 
-var dbConn = db.GetConnection()
-var dbName = "Simpler"
-
+// Makes a POST request to the server
 func create(p utils.Product) {
 
 	url := "http://localhost:8888/products"
@@ -37,6 +34,7 @@ func create(p utils.Product) {
 	}
 }
 
+// Makes a GET request to the server
 func read(page int, limit int) {
 
 	baseURL := "http://localhost:8888/products"
@@ -70,6 +68,7 @@ func read(page int, limit int) {
 	}
 }
 
+// Makes a PUT request to the server
 func update(p utils.Product) {
 
 	jsonData, err := json.Marshal(p)
@@ -114,6 +113,7 @@ func update(p utils.Product) {
 
 }
 
+// Makes a DELETE request to the server
 func delete(id string) {
 
 	baseURL := "http://localhost:8888/product"
@@ -139,12 +139,6 @@ func delete(id string) {
 
 }
 
-func createDB(name string) {
-	database := db.Create(name, dbConn)
-	fmt.Println("Database " + database.Name + " created")
-	addAllProductsToDB("../data.json")
-}
-
 func addAllProductsToDB(path string) {
 	products := utils.JsonToArray(path)
 
@@ -164,20 +158,20 @@ func main() {
 
 	switch arg {
 	case "db":
-		fmt.Println("Creating the database")
-		createDB(dbName)
+		fmt.Println("Adding data to DB")
+		addAllProductsToDB("../data.json")
 	case "c":
 		fmt.Println("Making a POST request")
 		create(utils.NewProduct("1", "TEST", "POLLA LEFTA", "FULL"))
 	case "r":
 		fmt.Println("Making a GET request")
-		read(1, 31)
+		read(1, 31) // !!! TEST IT WITH DIFFERENT VALUES OF PAGE AND LIMIT !!!
 	case "u":
 		fmt.Println("Making a PUT request")
-		update(utils.NewProduct("1006630031642066945", "TESTA", "", "")) // !!! MAKE SURE YOU PUT A VALID ID !!!
+		update(utils.NewProduct("1006630031642066945", "TEST", "TEST", "TEST")) // !!! MAKE SURE TO PUT A VALID ID !!!
 	case "d":
 		fmt.Println("Making a DELETE request")
-		delete("1006630031642066945")
+		delete("1006630031642066945") // !!! MAKE SURE TO PUT A VALID ID !!!
 	default:
 		fmt.Println("Unknown request. Please use 'db', 'c', 'r', 'u', or 'd'.")
 	}

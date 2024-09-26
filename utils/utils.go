@@ -18,6 +18,7 @@ func NewProduct(id, name, price, quantity string) Product{
 	return Product{id, name, price, quantity}
 }
 
+// Parses a json file and returns a list of Products
 func JsonToArray(path string) []Product {
 	file, err := os.Open(path)
 	if err != nil {

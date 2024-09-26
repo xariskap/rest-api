@@ -3,16 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 	"strconv"
+	"time"
 
 	"rest/db"
 
 	"github.com/gin-gonic/gin"
 )
-
-var dbConn = db.GetConnection()
-var dbName = "Simpler"
 
 type Product struct {
 	ID       string `json:"id"`
@@ -21,6 +21,7 @@ type Product struct {
 	Quantity string `json:"quantity"`
 }
 
+// Handles the get requests
 func getProducts(db *db.Database) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		pageStr := c.Query("page")
@@ -75,7 +76,7 @@ func getProducts(db *db.Database) gin.HandlerFunc {
 }
 
 // Get a specific product
-func getProduct(db *db.Database) gin.HandlerFunc{
+func getProduct(db *db.Database) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Query("id")
 		var p Product
@@ -90,7 +91,7 @@ func getProduct(db *db.Database) gin.HandlerFunc{
 	}
 }
 
-// Add a product
+// Handles POST requests
 func addProduct(db *db.Database) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var product Product
@@ -109,6 +110,7 @@ func addProduct(db *db.Database) gin.HandlerFunc {
 	}
 }
 
+// Handles PUT requests
 func updatePruduct(db *db.Database) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
@@ -119,8 +121,6 @@ func updatePruduct(db *db.Database) gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Product ID is not provided!"})
 			return
 		}
-
-		
 
 		if err := c.ShouldBindJSON(&newProduct); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -155,6 +155,7 @@ func updatePruduct(db *db.Database) gin.HandlerFunc {
 	}
 }
 
+// Handles DELETE requests
 func deleteProduct(db *db.Database) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Query("id")
@@ -172,11 +173,32 @@ func deleteProduct(db *db.Database) gin.HandlerFunc {
 
 		c.JSON(http.StatusNoContent, nil)
 	}
-	
+
 }
 
 func main() {
-	database := db.USE(dbName, dbConn)
+	dbUser := "root"
+	dbPassword := "root"
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := "26257"
+	dbName := "simpler"
+
+	if dbHost == "" {
+		dbHost = "localhost"
+	}
+
+	for {
+		_, err := db.GetConnection(dbUser, dbHost, dbPort, dbName)
+		if err == nil {
+			break
+		}
+		log.Println("Failed to connect to database. Retrying...")
+		time.Sleep(1 * time.Second)
+	}
+
+	dbConn, _ := db.GetConnection(dbUser, dbHost, dbPort, dbName)
+	db.Create(dbUser, dbPassword, dbHost, dbPort, dbName, dbConn)
+	database := db.USE(dbUser, dbPassword, dbHost, dbPort, dbName, dbConn)
 	defer dbConn.Close(context.Background())
 
 	r := gin.Default()
