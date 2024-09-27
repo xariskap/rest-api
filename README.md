@@ -7,6 +7,7 @@ This README will guide you through the steps to set up and test the API.
 
 ### Prerequisites
 
+- Go 1.22.3
 - Docker
 - Docker Compose
 
