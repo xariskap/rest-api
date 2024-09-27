@@ -37,6 +37,8 @@ RUN adduser \
 USER appuser
 
 COPY --from=build /bin/server /bin/
+WORKDIR /bin
+COPY data.json /bin/data.json
 
 EXPOSE 8888
 
