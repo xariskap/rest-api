@@ -162,16 +162,16 @@ func main() {
 		addAllProductsToDB("../data.json")
 	case "c":
 		fmt.Println("Making a POST request")
-		create(utils.NewProduct("1", "TEST", "POLLA LEFTA", "FULL"))
+		create(utils.NewProduct("0", "TEST", "POLLA LEFTA", "FULL"))
 	case "r":
 		fmt.Println("Making a GET request")
-		read(1, 31) // !!! TEST IT WITH DIFFERENT VALUES OF PAGE AND LIMIT !!!
+		read(1, 30) // RETURNS ALL PRODUCTS
 	case "u":
 		fmt.Println("Making a PUT request")
-		update(utils.NewProduct("1006630031642066945", "TEST", "TEST", "TEST")) // !!! MAKE SURE TO PUT A VALID ID !!!
+		update(utils.NewProduct("0", "TEST", "TEST", "TEST")) // !!! MAKE SURE TO USE A VALID ID !!!
 	case "d":
 		fmt.Println("Making a DELETE request")
-		delete("1006630031642066945") // !!! MAKE SURE TO PUT A VALID ID !!!
+		delete("1") // !!! MAKE SURE TO USE A VALID ID !!!
 	default:
 		fmt.Println("Unknown request. Please use 'db', 'c', 'r', 'u', or 'd'.")
 	}

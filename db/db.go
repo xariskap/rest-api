@@ -29,7 +29,7 @@ func (db Database) createSchema() {
 		"DROP DATABASE IF EXISTS " + db.Name,
 		"CREATE DATABASE " + db.Name,
 		"USE " + db.Name,
-		"CREATE TABLE products (id SERIAL PRIMARY KEY, name STRING, price STRING, quantity STRING)",
+		"CREATE TABLE products (id STRING PRIMARY KEY, name STRING, price STRING, quantity STRING)",
 	}
 
 	db.ExecSQL(databaseInit)

@@ -1,9 +1,12 @@
 package utils
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"os"
 )
 
@@ -14,7 +17,7 @@ type Product struct {
 	Quantity string `json:"quantity"`
 }
 
-func NewProduct(id, name, price, quantity string) Product{
+func NewProduct(id, name, price, quantity string) Product {
 	return Product{id, name, price, quantity}
 }
 
@@ -39,4 +42,32 @@ func JsonToArray(path string) []Product {
 	}
 
 	return products
+}
+
+func create(p Product) {
+
+	url := "http://localhost:8888/products"
+
+	jsonData, err := json.Marshal(p)
+	if err != nil {
+		log.Fatalf("Error marshalling product to JSON: %v", err)
+	}
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		log.Fatalf("Error making POST request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusCreated {
+		fmt.Printf("POST request failed with status: %s\n", resp.Status)
+	}
+}
+
+func AddAllProductsToDB(path string) {
+	products := JsonToArray(path)
+
+	for _, p := range products {
+		create(p)
+	}
 }

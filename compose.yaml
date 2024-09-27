@@ -12,7 +12,7 @@ services:
       - DB_PASSWORD=root
       - DB_HOST=cockroachdb
       - DB_PORT=26257
-      - DB_NAME=simpler
+      - DB_NAME=restdb
 
   cockroachdb:
     image: cockroachdb/cockroach:v22.2.9

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"rest/db"
+	"rest/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -100,9 +101,14 @@ func addProduct(db *db.Database) gin.HandlerFunc {
 			return
 		}
 
-		err := db.ExecQuery("INSERT INTO products (name, price, quantity) VALUES ($1, $2, $3)", product.Name, product.Price, product.Quantity)
+		if product.ID == "" || product.Name == "" || product.Price == "" || product.Quantity == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Empty field"})
+			return
+		}
+
+		err := db.ExecQuery("INSERT INTO products (id, name, price, quantity) VALUES ($1, $2, $3, $4)", product.ID, product.Name, product.Price, product.Quantity)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -165,7 +171,15 @@ func deleteProduct(db *db.Database) gin.HandlerFunc {
 			return
 		}
 
-		err := db.ExecQuery("DELETE FROM products WHERE id = $1", id)
+		// Product does not exist
+		var p Product
+		err := db.QueryRow("SELECT * FROM products WHERE id = $1", id).Scan(&p.ID, &p.Name, &p.Price, &p.Quantity)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		err = db.ExecQuery("DELETE FROM products WHERE id = $1", id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -181,7 +195,7 @@ func main() {
 	dbPassword := "root"
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := "26257"
-	dbName := "simpler"
+	dbName := "restdb"
 
 	if dbHost == "" {
 		dbHost = "localhost"
@@ -208,6 +222,12 @@ func main() {
 	r.POST("/products", addProduct(database))
 	r.PUT("/product", updatePruduct(database))
 	r.DELETE("/product", deleteProduct(database))
+
+	// add data to the database after server starts running
+	go func() {
+		time.Sleep(3 * time.Second)
+		utils.AddAllProductsToDB("data.json")
+	}()
 
 	fmt.Println("Server is running on http://localhost:8888")
 	if err := r.Run(":8888"); err != nil {
